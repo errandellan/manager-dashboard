@@ -1,4 +1,4 @@
-view(<?php
+<?php
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -6,17 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/admin', function () {
-    return view('admin.dashboard');
-})->middleware('role:1');
 
-Route::get('/manager', function () {
-    return view("manager.dashboard");
-})->middleware('role:2');
-
-Route::get('/employee', function () {
-    return view ("employee.dashboard");
-})->middleware('role:3');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -26,6 +16,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/reports/create', [ReportController::class, 'create'])->name('reports.create');
+    Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
+
 });
 
 require __DIR__.'/auth.php';
