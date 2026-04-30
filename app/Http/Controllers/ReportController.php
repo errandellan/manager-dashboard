@@ -27,11 +27,13 @@ class ReportController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
         ]);
+	// save to database 
+	
     Report::create([
-        'user_id' => auth()->id(),
+        'user_id' => Auth::id(),
         'title' => $request->input('title'),
         'description' => $request->input('description'),
     ]);
-    return redirect()->route('dashboard')->with('success', 'Report created successfully.');
+    return redirect()->route('reports.index')->with('success', 'Report created successfully.');
 }
 }

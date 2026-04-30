@@ -1,25 +1,50 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2>Submit Report</h2>
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
+            Create Report
+        </h2>
     </x-slot>
 
-    <div class="p-6">
-        <form method="POST" action="{{ route('reports.store') }}">
-            @csrf
+    <div class="flex justify-center p-6">
+        <!-- Card -->
+        <div class="w-full max-w-2xl bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 border border-gray-200 dark:border-gray-600">
 
-            <div>
-                <label>Title</label>
-                <input type="text" name="title" class="border w-full">
-            </div>
+            <form method="POST" action="{{ route('reports.store') }}">
+                @csrf
 
-            <div class="mt-4">
-                <label>Description</label>
-                <textarea name="description" class="border w-full"></textarea>
-            </div>
+                <!-- Title -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
+                        Title
+                    </label>
 
-            <button class="mt-4 bg-blue-500 text-white px-4 py-2">
-                Submit
-            </button>
-        </form>
+                    <input type="text"
+                           name="title"
+                           class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-gray-400 focus:outline-none"
+                           required>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-200">
+                        Description
+                    </label>
+
+                    <textarea name="description"
+                              rows="5"
+                              class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-gray-400 focus:outline-none"
+                              required></textarea>
+                </div>
+
+                <!-- Button -->
+                <div class="mt-6">
+                    <x-primary-button>
+                        Create Report
+                    </x-primary-button>
+                </div>
+
+            </form>
+
+        </div>
     </div>
 </x-app-layout>
