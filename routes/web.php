@@ -27,4 +27,11 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+// Admin routes for user management
+Route::middleware(['auth'])->group(function () {
+    Route::get('/users', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+    Route::post('/users/{user}/update-role', [App\Http\Controllers\UserController::class, 'updateRole'])->name('users.updateRole');
+});
+
+
 require __DIR__.'/auth.php';
