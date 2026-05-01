@@ -6,10 +6,11 @@
     <div class="p-6">
         <div class="flex justify-start">
             <div class="flex items-center space-x-4">
-                 <a href="{{ route('reports.create') }}" class="bg-blue-500 text-white px-3 py-2" alt="Create New Report">
-                    ➕
+                @if(Auth::user()->role_id == 3)
+             <a href="{{ route('reports.create') }}" class="bg-blue-500 text-white px-3 py-2" alt="Create New Report">
+                    ➕Create New Report
             </a>
-            <p class="text-sm">Create New Report</p>
+                @endif
             </div>
             
         </div>
