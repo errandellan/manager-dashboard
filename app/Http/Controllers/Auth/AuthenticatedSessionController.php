@@ -19,7 +19,16 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
         $request->session()->regenerate();
-
+        $user  = Auth::user();
+    
+    //preventing deleted user from login
+    if($user && $user->deleted_at !== null){
+        Auth::logout();
+    
+        return back()->withErrors([
+            'email' => 'Your Account is being deleted '
+        ]);
+    }
         return redirect()->route('dashboard');
     }
 
