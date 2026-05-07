@@ -18,17 +18,42 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex gap-4">
+                <!-- <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex gap-4"> -->
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                </div>
-                @if(Auth::user()->role_id == 1)
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.index')">
-                        {{ __('Users') }}
+                <!-- </div> -->
+                
+
+                @if(auth()->user()->role_id == 1)
+
+                    <x-nav-link :href="route('users.index')">
+                        Users
                     </x-nav-link>
-                </div>
+
+                    <x-nav-link :href="route('reports.index')">
+                        Reports
+                    </x-nav-link>
+
+                @endif
+
+
+                @if(auth()->user()->role_id == 2)
+
+                    <x-nav-link :href="route('reports.index')">
+                        Reports
+                    </x-nav-link>
+
+                @endif
+
+
+                @if(auth()->user()->role_id == 3)
+
+                    <x-nav-link :href="route('reports.index')">
+                        My Reports
+                    </x-nav-link>
+
                 @endif
             </div>
 
