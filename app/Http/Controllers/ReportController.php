@@ -11,16 +11,38 @@ class ReportController extends Controller
 {
     public function index(){
         $user = Auth::user();
+
+        //get status filter from URL 
+        $status = request('status');
+
+        //employee can only see their own reports, managers and admins can see all reports
         if($user->role_id == 3){
             //employee can only see their own reports
-            $reports = Report::where('user_id', $user->id)->latest()->get();
+            $reports = Report::where('user_id', $user->id);
             
         }else{
             //managers and admins can see all reports
-            $reports = Report::with('user')->latest()->get();
+            $reports = Report::with('user');
         }
-        // $reports = Report::with('user')->latest()->get();
-        return view('reports.index', compact('reports'));
+
+        //apply filter if selected 
+        if($status){
+            $reports = $reports->where('status', $status);
+        }
+        //Final result 
+         $reports = $reports->latest()->get();
+
+    //creating a dashboard summary of reports by status
+        $totalReports = $reports->count();
+
+        $pendingReports = $reports->where('status', 'pending')->count();
+
+        $approvedReports = $reports->where('status', 'approved')->count();
+
+        $rejectedReports = $reports->where('status', 'rejected')->count();
+        return view('reports.index', compact(
+            'reports', 'totalReports', 'pendingReports', 'approvedReports', 'rejectedReports'
+        ));
     }
 
     //show create forms
@@ -50,6 +72,27 @@ class ReportController extends Controller
         'title' => $request->input('title'),
         'description' => $request->input('description'),
     ]);
+
     return redirect()->route('reports.index')->with('success', 'Report created successfully.');
+}
+public function approve(Report $report){
+    //only manager can approve
+    if(Auth::user()->role_id != 2) {
+        abort(403, 'Only managers have this privilege.');
+}
+$report->update([
+    'status' => Report::STATUS_APPROVED
+    ]);
+return redirect()->route('reports.index')->with('success', 'Report approved successfully.');
+}
+public function reject(Report $report){
+    //only manager can reject
+    if(Auth::user()->role_id != 2) {
+        abort(403, 'Only managers have this privilege.');
+}
+$report->update([
+    'status' => Report::STATUS_REJECTED
+    ]);
+return redirect()->route('reports.index')->with('success', 'Report rejected successfully.');
 }
 }
