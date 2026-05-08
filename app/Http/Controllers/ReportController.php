@@ -14,6 +14,7 @@ class ReportController extends Controller
 
         //get status filter from URL 
         $status = request('status');
+        $search = request('search');
 
         //employee can only see their own reports, managers and admins can see all reports
         if($user->role_id == 3){
@@ -28,9 +29,21 @@ class ReportController extends Controller
         //apply filter if selected 
         if($status){
             $reports = $reports->where('status', $status);
+            
         }
-        //Final result 
-         $reports = $reports->latest()->get();
+        if($search){
+            $reports = $reports->where(function($query) use ($search){
+                $query->where('title', 'like', "%$search%")
+                      ->orWhere('description', 'like', "%$search%" )
+                      ->orWhereHas('user', function($userQuery) use ($search){
+                          $userQuery->where('name', $search);
+                      });
+                      
+            });
+        }
+        //Final result with pagination that shows the latest reports first 
+        //after 5 reports, it will show the next page with the next 5 reports and so on
+         $reports = $reports->latest()->paginate(5);
 
     //creating a dashboard summary of reports by status
         $totalReports = $reports->count();

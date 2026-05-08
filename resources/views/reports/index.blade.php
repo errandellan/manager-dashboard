@@ -4,6 +4,15 @@
     </x-slot>
 
     <div class="p-6">
+        <!-- Search form -->
+        <form method="GET" action="{{ route('reports.index') }}" class="mb-4">
+            <div class="flex space-x-2">
+                <input type="text" name="search" placeholder="Search reports..." value="{{ request('search') }}" class="border p-2 rounded w-full">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+                    Search
+                </button>
+            </div>
+        </form>
         <!-- adding dashboard filters and actions summary -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
 
@@ -142,6 +151,9 @@
         @empty
             <p>No reports yet.</p>
         @endforelse
+            <div class="mt-4">
+            {{ $reports->links() }} <!-- Pagination links -->
+            </div>
 
         </div>
 

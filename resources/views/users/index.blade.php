@@ -2,8 +2,10 @@
     <x-slot name="header">
         <h2>Users</h2>
     </x-slot>
+    <x-nav
 
     <div class="p-6">
+        
 
         {{--  SUCCESS MESSAGE --}}
         @if(session('success'))
