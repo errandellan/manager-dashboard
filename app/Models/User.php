@@ -37,6 +37,7 @@ class User extends Authenticatable
         return $this->hasMany(Report::class); // Assuming Report is the model for the reports table
 
     }
+    //One user belongs to one department
     public function department()
     {
         return $this->belongsTo(Department::class);

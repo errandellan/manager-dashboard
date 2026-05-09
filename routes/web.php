@@ -29,6 +29,12 @@ Route::middleware(['auth'])->group(function () {
 
 });
 
+// //subpages for reports
+// Route::prefix('reports')->name('reports.')->group(function () {
+//     Route::get('/', [ReportController::class, 'index'])->name('index');
+//     Route::get('/analytics', [ReportController::class, 'analytics'])->name('analytics');
+// });
+
 // Admin routes for user management
 Route::middleware(['auth'])->group(function () {
     Route::get('/users', [App\Http\Controllers\UserController::class, 'index'])->name('users.index');

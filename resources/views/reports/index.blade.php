@@ -7,9 +7,72 @@
         <!-- Search form -->
         <form method="GET" action="{{ route('reports.index') }}" class="mb-4">
             <div class="flex space-x-2">
-                <input type="text" name="search" placeholder="Search reports..." value="{{ request('search') }}" class="border p-2 rounded w-full">
-                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
-                    Search
+               
+             <form method="GET" action="{{ route('reports.index') }}" class="mb-4">
+
+    <div class="flex flex-wrap gap-3">
+
+        <!-- Search -->
+        <input
+            type="text"
+            name="search"
+            placeholder="Search reports..."
+            value="{{ request('search') }}"
+            class="border rounded px-3 py-2"
+        >
+
+        <!-- Status Filter -->
+        <select name="status" class="border rounded px-6 py-2">
+
+            <option value="">All Status</option>
+
+            <option value="pending"
+                {{ request('status') == 'pending' ? 'selected' : '' }}>
+                Pending
+            </option>
+
+            <option value="approved"
+                {{ request('status') == 'approved' ? 'selected' : '' }}>
+                Approved
+            </option>
+
+            <option value="rejected"
+                {{ request('status') == 'rejected' ? 'selected' : '' }}>
+                Rejected
+            </option>
+
+        </select>
+
+        <!-- Department Filter -->
+        <select name="department" class="border rounded px-4 py-2">
+
+            <option value="">All Departments</option>
+
+            @foreach($departments as $department)
+
+                <option value="{{ $department->id }}"
+                    {{ request('department') == $department->id ? 'selected' : '' }}>
+
+                    {{ $department->name }}
+
+                </option>
+
+            @endforeach
+
+        </select>
+
+        <!-- Submit -->
+        <button
+            type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded">
+
+            Filter
+
+        </button>
+
+    </div>
+
+</form>        
                 </button>
             </div>
         </form>
@@ -41,7 +104,7 @@
         </div>
 
     </div>
-        <div class="flex justify-start">
+        <div class="flex justify-between items-center mb-4">
             <div class="mb-4 flex space-x-2">
 
                 <a href="{{ route('reports.index') }}"
@@ -65,9 +128,10 @@
                 </a>
 
             </div>
-            <div class="flex items-center space-x-4">
+            
+            <div class="flex items-center justify-content right space-x-4">
                 @if(Auth::user()->role_id == 3)
-             <a href="{{ route('reports.create') }}" class="bg-blue-500 text-white px-3 py-2" alt="Create New Report">
+             <a href="{{ route('reports.create') }}" class="bg-blue-500 text-white px-3 py-1"  alt="Create New Report">
                     ➕Create New Report
             </a>
                 @endif
@@ -86,10 +150,15 @@
                     {{ $report->title }}
                 </h3>
 
+                    <!-- Displaying the department name if available -->
                 <p>{{ $report->description }}</p>
 
+                
                 <small>
                     Submitted by: {{ $report->user->name ?? 'Unknown' }}
+                    @if($report->user && $report->user->department)
+                        ({{ $report->user->department->name }})
+                    @endif
                 </small>
 
                 <br>
@@ -158,4 +227,186 @@
         </div>
 
     </div>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    
+    <div class="flex flex-col lg:flex-row gap-6 mt-6">
+
+    <!-- STATUS CHART -->
+    <div class="bg-white p-6 rounded shadow flex-1">
+
+        <h2 class="text-lg font-bold mb-4">
+            Report Status Analytics
+        </h2>
+
+        <div class="h-80">
+            <canvas id="statusChart"></canvas>
+        </div>
+
+    </div>
+
+    <!-- DEPARTMENT CHART -->
+    <div class="bg-white p-6 rounded shadow flex-1">
+
+        <h2 class="text-lg font-bold mb-4">
+            Department Report Analytics
+        </h2>
+
+        <div class="h-80">
+            <canvas id="departmentChart"></canvas>
+        </div>
+
+    </div>
+
+</div>
+
+   <script>
+
+
+    // STATUS CHART
+    const ctx = document.getElementById('statusChart');
+
+    new Chart(ctx, {
+
+        type: 'bar',
+
+        data: {
+
+            labels: ['Pending', 'Approved', 'Rejected'],
+
+            datasets: [{
+                label: 'Reports Count',
+
+                data: [
+                    {{ $statusCounts['pending'] }},
+                    {{ $statusCounts['approved'] }},
+                    {{ $statusCounts['rejected'] }}
+                ],
+
+                backgroundColor: [
+                    '#facc15',
+                    '#22c55e',
+                    '#ef4444'
+                ],
+
+                borderWidth: 1
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+
+
+    // DEPARTMENT CHART
+    const deptCtx = document.getElementById('departmentChart');
+
+    new Chart(deptCtx, {
+
+        type: 'pie',
+
+        data: {
+
+            labels: [
+                @foreach($departmentCounts as $department)
+                    '{{ $department['name'] }}',
+                @endforeach
+            ],
+
+            datasets: [{
+                label: 'Department Report Count',
+
+                data: [
+                    @foreach($departmentCounts as $department)
+                        {{ $department['reports_count'] }},
+                    @endforeach
+                ],
+
+                borderWidth: 1
+            }]
+        },
+
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+
+    });
+
+</script>
+<!-- RECENT ACTIVITY FEED -->
+<div class="bg-white p-6 rounded shadow mt-6">
+
+    <h2 class="text-lg font-bold mb-4">
+        Recent Activity
+    </h2>
+
+    <div class="space-y-4">
+
+        @forelse($recentReports as $report)
+
+            <div class="border-b pb-3">
+
+                <!-- REPORT TITLE -->
+                <p class="font-semibold">
+                    {{ $report->title }}
+                </p>
+
+                <!-- USER -->
+                <p class="text-sm text-gray-600">
+                    Submitted by:
+                    {{ $report->user->name ?? 'Unknown User' }}
+                </p>
+
+                <!-- STATUS -->
+                <div class="mt-1">
+
+                    @if($report->status == 'approved')
+
+                        <span class="text-green-600 font-semibold">
+                            ✔ Approved
+                        </span>
+
+                    @elseif($report->status == 'rejected')
+
+                        <span class="text-red-600 font-semibold">
+                            ❌ Rejected
+                        </span>
+
+                    @else
+
+                        <span class="text-yellow-600 font-semibold">
+                            ⏳ Pending
+                        </span>
+
+                    @endif
+
+                </div>
+
+                <!-- TIME -->
+                <p class="text-xs text-gray-500 mt-1">
+                    {{ $report->created_at->diffForHumans() }}
+                </p>
+
+            </div>
+
+        @empty
+
+            <p>No recent activity.</p>
+
+        @endforelse
+
+    </div>
+
+</div>
 </x-app-layout>
