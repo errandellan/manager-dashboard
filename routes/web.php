@@ -26,14 +26,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');
     Route::post('/reports/{report}/approve', [ReportController::class, 'approve'])->name('reports.approve');
     Route::post('/reports/{report}/reject', [ReportController::class, 'reject'])->name('reports.reject');
-
+    Route::get('/reports/analytics', [ReportController::class, 'analytics'])->name('reports.analytics');
+    Route::get('/reports/activity', [ReportController::class, 'activity'])->name('reports.activity');
 });
 
-// //subpages for reports
-// Route::prefix('reports')->name('reports.')->group(function () {
-//     Route::get('/', [ReportController::class, 'index'])->name('index');
-//     Route::get('/analytics', [ReportController::class, 'analytics'])->name('analytics');
-// });
 
 // Admin routes for user management
 Route::middleware(['auth'])->group(function () {

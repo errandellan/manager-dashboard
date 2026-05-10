@@ -1,10 +1,15 @@
-<app-layout>
-    <x-slot name="header">
-        <h2>Users</h2>
-    </x-slot>
-    <x-nav
+<x-app-layout>
 
-    <div class="p-6">
+     <x-slot name="header">
+        <h1 class="text-2xl font-semibold text-gray-800 leading-tight center">
+            <strong>User Management</strong>
+        </h1>
+
+    
+    </x-slot>
+    
+
+
         
 
         {{--  SUCCESS MESSAGE --}}
@@ -21,7 +26,7 @@
             </div>
         @endif
 
-        <p class="text-sm mb-4"><strong>Manage User Roles</strong></p>
+        
 
         @foreach($users as $user)
             <div class="border p-4 mb-3">
@@ -62,4 +67,4 @@
         @endforeach
 
     </div>
-</app-layout>
+</x-app-layout>

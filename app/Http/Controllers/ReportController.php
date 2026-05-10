@@ -9,136 +9,328 @@ use App\Models\User;
 use App\Models\Department;
 
 class ReportController extends Controller
-
 {
-    public function index(){
+
+    // MAIN REPORT PAGE
+    public function index()
+    {
         $user = Auth::user();
 
-        //get status filter from URL 
+        // filters
         $status = request('status');
         $department = request('department');
         $search = request('search');
 
-        //employee can only see their own reports, managers and admins can see all reports
-        if($user->role_id == 3){
-            //employee can only see their own reports
+        // employee only sees own reports
+        if ($user->role_id == 3) {
+
             $reports = Report::where('user_id', $user->id);
-            
-        }else{
-            //managers and admins can see all reports
+
+        } else {
+
+            // admin and manager see all
             $reports = Report::with('user.department');
+
         }
 
-        //apply filter if selected 
-        if($status){
+        // status filter
+        if ($status) {
+
             $reports = $reports->where('status', $status);
-            
+
         }
-        if($department){
-            $reports = $reports->whereHas('user.department', function($query) use ($department){
-                $query->where('id', $department);
-            });
+
+        // department filter
+        if ($department) {
+
+            $reports = $reports->whereHas(
+                'user.department',
+
+                function ($query) use ($department) {
+
+                    $query->where('id', $department);
+
+                }
+            );
         }
-        if($search){
-            $reports = $reports->where(function($query) use ($search){
+
+        // search filter
+        if ($search) {
+
+            $reports = $reports->where(function ($query) use ($search) {
+
                 $query->where('title', 'like', "%$search%")
-                      ->orWhere('description', 'like', "%$search%" )
-                      ->orWhereHas('user.department', function($departmentQuery) use ($search){
-                          $departmentQuery->where('name', $search);
-                      });
-                      
+                    ->orWhere('description', 'like', "%$search%")
+                    ->orWhereHas(
+                        'user',
+
+                        function ($userQuery) use ($search) {
+
+                            $userQuery->where(
+                                'name',
+                                'like',
+                                "%$search%"
+                            );
+
+                        }
+                    )
+                    ->orWhereHas(
+                        'user.department',
+
+                        function ($departmentQuery) use ($search) {
+
+                            $departmentQuery->where(
+                                'name',
+                                'like',
+                                "%$search%"
+                            );
+
+                        }
+                    );
+
             });
+
         }
-        //Final result with pagination that shows the latest reports first 
-        //after 5 reports, it will show the next page with the next 5 reports and so on
-         $reports = $reports->latest()->paginate(5);
 
-        //creating a dashboard summary of reports by status
-        $totalReports = $reports->count();
+        // final paginated reports
+        $reports = $reports->latest()->paginate(5);
 
-        $pendingReports = $reports->where('status', 'pending')->count();
+        // summary cards
+        $totalReports = Report::count();
 
-        $approvedReports = $reports->where('status', 'approved')->count();
+        $pendingReports = Report::where(
+            'status',
+            'pending'
+        )->count();
 
-        $rejectedReports = $reports->where('status', 'rejected')->count();
+        $approvedReports = Report::where(
+            'status',
+            'approved'
+        )->count();
+
+        $rejectedReports = Report::where(
+            'status',
+            'rejected'
+        )->count();
+
+        // departments for filter dropdown
         $departments = Department::all();
 
-        //creating a chart data for reports by department
-        $statusCounts=[
-            'pending' => $reports->where('status', 'pending')->count(),
-            'approved' => $reports->where('status', 'approved')->count(),
-            'rejected' => $reports->where('status', 'rejected')->count(),
+        return view(
+            'reports.index',
+
+            compact(
+                'reports',
+                'totalReports',
+                'pendingReports',
+                'approvedReports',
+                'rejectedReports',
+                'departments'
+            )
+        );
+    }
+
+
+
+    // ANALYTICS PAGE
+    public function analytics()
+    {
+        // only admin and manager
+        if (!in_array(Auth::user()->role_id, [1, 2])) {
+
+            abort(403);
+
+        }
+
+        // report status analytics
+        $statusCounts = [
+
+            'pending' => Report::where(
+                'status',
+                'pending'
+            )->count(),
+
+            'approved' => Report::where(
+                'status',
+                'approved'
+            )->count(),
+
+            'rejected' => Report::where(
+                'status',
+                'rejected'
+            )->count(),
         ];
 
-        //how many reports each department submitted
+
+
+        // department analytics
         $departmentCounts = Department::withCount('users')
-        ->get()
-        ->map(function($department){
-            return [
-                'name' => $department->name,
-                'reports_count' => Report::whereHas('user.department', function($query) use ($department){
-                    $query->where('department_id', $department->id);
-                })->count()
-            ];
-        });
+            ->get()
+            ->map(function ($department) {
 
-        //professional activity feed
-        $recentReports = Report::with('user')->latest()->take(5)->get();
+                return [
 
+                    'name' => $department->name,
 
-        return view('reports.index', compact(
-            'reports', 'totalReports', 'pendingReports', 'approvedReports', 'rejectedReports', 'departments', 'statusCounts', 'departmentCounts', 'recentReports'
-        ));
+                    'reports_count' => Report::whereHas(
+                        'user.department',
+
+                        function ($query) use ($department) {
+
+                            $query->where(
+                                'department_id',
+                                $department->id
+                            );
+
+                        }
+
+                    )->count()
+                ];
+            });
+
+        return view(
+            'reports.analytics',
+
+            compact(
+                'statusCounts',
+                'departmentCounts'
+            )
+        );
     }
 
-    //show create forms
+
+
+    // ACTIVITY FEED PAGE
+    public function activity()
+    {
+        // only admin and manager
+        if (!in_array(Auth::user()->role_id, [1, 2])) {
+
+            abort(403);
+
+        }
+
+        $recentReports = Report::with('user')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view(
+            'reports.activity',
+
+            compact('recentReports')
+        );
+    }
+
+
+
+    // SHOW CREATE REPORT FORM
     public function create()
     {
-        if(Auth::user()->role_id != 3) {
+        // only employee
+        if (Auth::user()->role_id != 3) {
+
             abort(403, 'Unauthorized action.');
+
         }
+
         return view('reports.create');
     }
-    
-    //Store report
-    public function store(Request $request)
-   
-    {   //does not store other than employee reports
-         if(Auth::user()->role_id != 3) {
-        abort(403, 'Unauthorized action.');
-     }  
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
-	// save to database 
-	
-    Report::create([
-        'user_id' => Auth::id(),
-        'title' => $request->input('title'),
-        'description' => $request->input('description'),
-    ]);
 
-    return redirect()->route('reports.index')->with('success', 'Report created successfully.');
-}
-public function approve(Report $report){
-    //only manager can approve
-    if(Auth::user()->role_id != 2) {
-        abort(403, 'Only managers have this privilege.');
-}
-$report->update([
-    'status' => Report::STATUS_APPROVED
-    ]);
-return redirect()->route('reports.index')->with('success', 'Report approved successfully.');
-}
-public function reject(Report $report){
-    //only manager can reject
-    if(Auth::user()->role_id != 2) {
-        abort(403, 'Only managers have this privilege.');
-}
-$report->update([
-    'status' => Report::STATUS_REJECTED
-    ]);
-return redirect()->route('reports.index')->with('success', 'Report rejected successfully.');
-}
+
+
+    // STORE REPORT
+    public function store(Request $request)
+    {
+        // only employee
+        if (Auth::user()->role_id != 3) {
+
+            abort(403, 'Unauthorized action.');
+
+        }
+
+        $request->validate([
+
+            'title' => 'required|string|max:255',
+
+            'description' => 'required|string',
+
+        ]);
+
+        Report::create([
+
+            'user_id' => Auth::id(),
+
+            'title' => $request->input('title'),
+
+            'description' => $request->input('description'),
+
+        ]);
+
+        return redirect()
+            ->route('reports.index')
+            ->with(
+                'success',
+                'Report created successfully.'
+            );
+    }
+
+
+
+    // APPROVE REPORT
+    public function approve(Report $report)
+    {
+        // only manager
+        if (Auth::user()->role_id != 2) {
+
+            abort(
+                403,
+                'Only managers have this privilege.'
+            );
+
+        }
+
+        $report->update([
+
+            'status' => Report::STATUS_APPROVED
+
+        ]);
+
+        return redirect()
+            ->route('reports.index')
+            ->with(
+                'success',
+                'Report approved successfully.'
+            );
+    }
+
+
+
+    // REJECT REPORT
+    public function reject(Report $report)
+    {
+        // only manager
+        if (Auth::user()->role_id != 2) {
+
+            abort(
+                403,
+                'Only managers have this privilege.'
+            );
+
+        }
+
+        $report->update([
+
+            'status' => Report::STATUS_REJECTED
+
+        ]);
+
+        return redirect()
+            ->route('reports.index')
+            ->with(
+                'success',
+                'Report rejected successfully.'
+            );
+    }
+
 }

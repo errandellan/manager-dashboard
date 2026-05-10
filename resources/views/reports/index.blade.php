@@ -1,9 +1,33 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2>Reports</h2>
+        
+        <div class="p-6">
+        <div class="center flex flex-wrap gap-20 mb-6">
+
+    <!-- Reports Page -->
+    <a href="{{ route('reports.index') }}"
+       class="bg-blue-500 text-white px-4 py-2 rounded">
+        Reports
+    </a>
+    
+    
+
+    <!-- Analytics Page -->
+    <a href="{{ route('reports.analytics') }}"
+       class="bg-purple-500 text-white px-4 py-2 rounded">
+        Analytics
+    </a>
+
+    <!-- Activity Feed Page -->
+    <a href="{{ route('reports.activity') }}"
+       class="bg-green-500 text-white px-4 py-2 rounded">
+        Activity Feed
+    </a>
+
+</div>
     </x-slot>
 
-    <div class="p-6">
+    
         <!-- Search form -->
         <form method="GET" action="{{ route('reports.index') }}" class="mb-4">
             <div class="flex space-x-2">
@@ -227,186 +251,5 @@
         </div>
 
     </div>
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    
-    <div class="flex flex-col lg:flex-row gap-6 mt-6">
-
-    <!-- STATUS CHART -->
-    <div class="bg-white p-6 rounded shadow flex-1">
-
-        <h2 class="text-lg font-bold mb-4">
-            Report Status Analytics
-        </h2>
-
-        <div class="h-80">
-            <canvas id="statusChart"></canvas>
-        </div>
-
-    </div>
-
-    <!-- DEPARTMENT CHART -->
-    <div class="bg-white p-6 rounded shadow flex-1">
-
-        <h2 class="text-lg font-bold mb-4">
-            Department Report Analytics
-        </h2>
-
-        <div class="h-80">
-            <canvas id="departmentChart"></canvas>
-        </div>
-
-    </div>
-
-</div>
-
-   <script>
-
-
-    // STATUS CHART
-    const ctx = document.getElementById('statusChart');
-
-    new Chart(ctx, {
-
-        type: 'bar',
-
-        data: {
-
-            labels: ['Pending', 'Approved', 'Rejected'],
-
-            datasets: [{
-                label: 'Reports Count',
-
-                data: [
-                    {{ $statusCounts['pending'] }},
-                    {{ $statusCounts['approved'] }},
-                    {{ $statusCounts['rejected'] }}
-                ],
-
-                backgroundColor: [
-                    '#facc15',
-                    '#22c55e',
-                    '#ef4444'
-                ],
-
-                borderWidth: 1
-            }]
-        },
-
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-
-
-
-    // DEPARTMENT CHART
-    const deptCtx = document.getElementById('departmentChart');
-
-    new Chart(deptCtx, {
-
-        type: 'pie',
-
-        data: {
-
-            labels: [
-                @foreach($departmentCounts as $department)
-                    '{{ $department['name'] }}',
-                @endforeach
-            ],
-
-            datasets: [{
-                label: 'Department Report Count',
-
-                data: [
-                    @foreach($departmentCounts as $department)
-                        {{ $department['reports_count'] }},
-                    @endforeach
-                ],
-
-                borderWidth: 1
-            }]
-        },
-
-        options: {
-            responsive: true,
-            maintainAspectRatio: false
-        }
-
-    });
-
-</script>
-<!-- RECENT ACTIVITY FEED -->
-<div class="bg-white p-6 rounded shadow mt-6">
-
-    <h2 class="text-lg font-bold mb-4">
-        Recent Activity
-    </h2>
-
-    <div class="space-y-4">
-
-        @forelse($recentReports as $report)
-
-            <div class="border-b pb-3">
-
-                <!-- REPORT TITLE -->
-                <p class="font-semibold">
-                    {{ $report->title }}
-                </p>
-
-                <!-- USER -->
-                <p class="text-sm text-gray-600">
-                    Submitted by:
-                    {{ $report->user->name ?? 'Unknown User' }}
-                </p>
-
-                <!-- STATUS -->
-                <div class="mt-1">
-
-                    @if($report->status == 'approved')
-
-                        <span class="text-green-600 font-semibold">
-                            ✔ Approved
-                        </span>
-
-                    @elseif($report->status == 'rejected')
-
-                        <span class="text-red-600 font-semibold">
-                            ❌ Rejected
-                        </span>
-
-                    @else
-
-                        <span class="text-yellow-600 font-semibold">
-                            ⏳ Pending
-                        </span>
-
-                    @endif
-
-                </div>
-
-                <!-- TIME -->
-                <p class="text-xs text-gray-500 mt-1">
-                    {{ $report->created_at->diffForHumans() }}
-                </p>
-
-            </div>
-
-        @empty
-
-            <p>No recent activity.</p>
-
-        @endforelse
-
-    </div>
-
-</div>
+   
 </x-app-layout>
