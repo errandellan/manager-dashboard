@@ -35,8 +35,9 @@
                 </h2>
 
                 <div class="h-80">
-                    <canvas id="departmentChart"></canvas>
+                    <canvas id="departmentChart">
                 </div>
+
 
             </div>
 

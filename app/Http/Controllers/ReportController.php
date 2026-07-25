@@ -129,6 +129,26 @@ class ReportController extends Controller
             )
         );
     }
+    public function show(Report $report)
+    {
+    $user = Auth::user();
+
+    // employee can only view own report
+    if ($user->role_id == 3 && $report->user_id != $user->id) {
+
+        abort(403);
+
+    }
+
+    // load relationships
+    $report->load('user.department');
+
+    return view(
+        'reports.show',
+
+        compact('report')
+    );
+}
 
 
 
@@ -224,7 +244,7 @@ class ReportController extends Controller
 
 
 
-    // SHOW CREATE REPORT FORM
+    // SHOW CREATE REPORT FORM THAT
     public function create()
     {
         // only employee

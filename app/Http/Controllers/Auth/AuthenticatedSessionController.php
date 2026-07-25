@@ -20,16 +20,20 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
         $user  = Auth::user();
-    
-    //preventing deleted user from login
-    if($user && $user->deleted_at !== null){
-        Auth::logout();
-    
-        return back()->withErrors([
-            'email' => 'Your Account is being deleted '
-        ]);
-    }
-        return redirect()->route('dashboard');
+        switch ($user->role_id) {
+            case 1:
+                return redirect()->route('admin.dashboard');
+            case 2:
+                return redirect()->route('manager.dashboard');
+            case 3:
+                return redirect()->route('employee.dashboard');
+            default:
+                Auth::logout();
+        }
+        return redirect('/login')
+            ->withErrors([
+                'email' => 'Unauthorized access.'
+                ]);
     }
 
     public function destroy(Request $request): RedirectResponse

@@ -5,13 +5,8 @@
         <div class="center flex flex-wrap gap-20 mb-6">
 
     <!-- Reports Page -->
-    <a href="{{ route('reports.index') }}"
-       class="bg-blue-500 text-white px-4 py-2 rounded">
-        Reports
-    </a>
     
-    
-
+   
     <!-- Analytics Page -->
     <a href="{{ route('reports.analytics') }}"
        class="bg-purple-500 text-white px-4 py-2 rounded">
@@ -66,6 +61,9 @@
             </option>
 
         </select>
+
+
+        
 
         <!-- Department Filter -->
         <select name="department" class="border rounded px-4 py-2">

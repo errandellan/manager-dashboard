@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('reports', function (Blueprint $table) {
-            $table->string('status')->default('pending'); // Add a status column with a default value of 'pending'
+        Schema::create('jobs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('department_id')->constrained()->onDelete('cascade');
+            $table->string('job_title');
+            $table->text('description')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('reports', function (Blueprint $table) {
-            $table->dropColumn('status'); // Remove the status column if the migration is rolled back
-        });
+        Schema::dropIfExists('jobs');
     }
 };
