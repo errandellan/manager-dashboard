@@ -26,12 +26,12 @@
                 🏠 Dashboard
             </a>
 
-            <a href="{{ route('users.index') }}"
+            <a href="{{route('admin.users')}}"
                class="block px-6 py-3 hover:bg-blue-800">
                 👥 Users
             </a>
 
-            <a href="#"
+            <a href="{{route('admin.departments')}}"
                class="block px-6 py-3 hover:bg-blue-800">
                 🏢 Departments
             </a>

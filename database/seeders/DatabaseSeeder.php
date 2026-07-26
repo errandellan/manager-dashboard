@@ -16,18 +16,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Call the RoleSeeder to seed the roles table
-        $this->call([RoleSeeder::class,
+        // Seed system tables
+        $this->call([
+            RoleSeeder::class,
+            DepartmentSeeder::class,
+            JobSeeder::class,
+             ]);
 
-                     ]);
 
-
-        //Existing default user (optional, can be removed if not needed)
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        //     'password' => Hash::make(''),
-        // ]);
+        //Creating the first admin user
+        User::firstOrCreate(
+            ['email' => 'chuwamacmillan@gmail.com'],
+            [
+                'name' => 'System Administrator',
+                'password' => Hash::make('admin12345'),
+                'phone' => '0612489899',
+                'role_id' => 1, //Admin
+                'department_id' => 1, // System Administration Department
+                'job_id' => 1,
+                'status' => 'active',
+            ]
+        );
         
     }
     

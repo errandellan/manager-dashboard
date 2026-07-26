@@ -10,6 +10,8 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Employee\AttendanceController;
 use App\Http\Controllers\Employee\TaskController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\DepartmentController;
 
 Route::get('/', function () {
     // if (Auth::check()){
@@ -48,28 +50,78 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+    ->name('admin.dashboard');
+
+    Route::get('/users', [UserController::class, 'index'])
+        ->name('admin.users');
+
+    Route::get('/departments', [DepartmentController::class, 'index'])
+    ->name('admin.departments');
+
+    Route::get('/departments/create', [DepartmentController::class, 'create'])
+        ->name('admin.departments.create');
+
+    Route::post('/departments', [DepartmentController::class, 'store'])
+        ->name('admin.departments.store');
+
+    Route::get('/departments/{department}/edit', [DepartmentController::class, 'edit'])
+        ->name('admin.departments.edit');
+
+    Route::put('/departments/{department}', [DepartmentController::class, 'update'])
+        ->name('admin.departments.update');
+
+    Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])
+        ->name('admin.departments.destroy');
+
+    Route::get('/jobs', function () {
+        return view('admin.jobs');
+    })->name('admin.jobs');
+
+    Route::get('/settings', function () {   
+        return view('admin.settings');
+    })->name('admin.settings');
+
+    //Admin user management routes
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])
+    ->name('admin.users.edit');
+
+    Route::put('/users/{user}', [UserController::class, 'update'])
+        ->name('admin.users.update');
+
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])
+        ->name('admin.users.destroy');
 });
 
-Route::middleware(['auth', 'manager'])->group(function () {
-    Route::get('/manager/dashboard', 
+
+// Manager Routes
+Route::middleware(['auth', 'manager'])->prefix('manager')->group(function () {
+    Route::get('/dashboard', 
     [ManagerDashboardController::class, 'index'])
     ->name('manager.dashboard');
 });
 
 
-Route::middleware(['auth', 'employee'])->group(function () {
-    Route::get('/employee/dashboard', 
+
+// Employee Routes
+Route::middleware(['auth', 'employee'])->prefix('employee')->group(function () {
+    Route::get('/dashboard', 
     [EmployeeDashboardController::class, 'index'])
     ->name('employee.dashboard');
 });
+
+
 
 /*
 |--------------------------------------------------------------------------
 | Profile Routes
 |--------------------------------------------------------------------------
 */
+
 Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])
