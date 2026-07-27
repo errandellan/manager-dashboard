@@ -9,23 +9,25 @@ use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardContro
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\Employee\AttendanceController;
-use App\Http\Controllers\Employee\TaskController;
+use App\Http\Controllers\Manager\AttendanceController as ManagerAttendanceController;
+use App\Http\Controllers\Manager\TaskController as ManagerTaskController;
+use App\Http\Controllers\Employee\TaskController as EmployeeTaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DepartmentController;
 
 Route::get('/', function () {
-    // if (Auth::check()){
-    //     switch (Auth::user()->role_id) {
-    //         case 1:
-    //             return redirect()->route('admin.dashboard');
-    //         case 2:
-    //             return redirect()->route('manager.dashboard');
-    //         case 3:
-    //             return redirect()->route('employee.dashboard');
-    //         default:
-    //             return redirect('/login');
-    //     }
-    // }
+    if (Auth::check()){
+        switch (Auth::user()->role_id) {
+            case 1:
+                return redirect()->route('admin.dashboard');
+            case 2:
+                return redirect()->route('manager.dashboard');
+            case 3:
+                return redirect()->route('employee.dashboard');
+            default:
+                return redirect('/login');
+        }
+    }
     return view('welcome');
 });
 
@@ -46,12 +48,10 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard Routes
+| Admin Routes
 |--------------------------------------------------------------------------
 */
 
-
-// Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])
@@ -86,7 +86,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         return view('admin.settings');
     })->name('admin.settings');
 
-    //Admin user management routes
+
+
+    //Admin user 
     Route::get('/users/{user}/edit', [UserController::class, 'edit'])
     ->name('admin.users.edit');
 
@@ -95,6 +97,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     Route::delete('/users/{user}', [UserController::class, 'destroy'])
         ->name('admin.users.destroy');
+
+    Route::get('/users/{user}/password', [UserController::class, 'resetPassword'])
+        ->name('admin.users.reset-password');
+    Route::put('/users/{user}/password', [UserController::class, 'updatePassword'])
+        ->name('admin.users.update-password');
 });
 
 
@@ -103,24 +110,22 @@ Route::middleware(['auth', 'manager'])->prefix('manager')->group(function () {
     Route::get('/dashboard', 
     [ManagerDashboardController::class, 'index'])
     ->name('manager.dashboard');
+
+    Route::get('/attendance',
+    [ManagerAttendanceController::class,'index'])
+    ->name('manager.attendance');
+
+    Route::resource('tasks',ManagerTaskController::class)
+    ->names('manager.tasks');
 });
-
-
-
-// Employee Routes
-Route::middleware(['auth', 'employee'])->prefix('employee')->group(function () {
-    Route::get('/dashboard', 
-    [EmployeeDashboardController::class, 'index'])
-    ->name('employee.dashboard');
-});
-
-
 
 /*
 |--------------------------------------------------------------------------
-| Profile Routes
+| Employee Routes
 |--------------------------------------------------------------------------
 */
+
+
 
 Route::middleware('auth')->group(function () {
 
@@ -132,27 +137,46 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/profile', [ProfileController::class, 'destroy'])
     ->name('profile.destroy');
+
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])
+    ->name('profile.password.update');
+
+    
 });
 
 /*
 |--------------------------------------------------------------------------
-| side bar  Routes
+| employee
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth','employee'])->group(function(){
+Route::middleware(['auth','employee'])
+    ->prefix('employee')
+    ->group(function(){
+    Route::get('/dashboard',
+    [EmployeeDashboardController::class, 'index'])
+    ->name('employee.dashboard');
 
-    Route::get('/employee/attendance',
+    Route::get('/attendance',
     [AttendanceController::class,'index'])
     ->name('employee.attendance');
-});
-Route::middleware(['auth','employee'])->group(function(){
 
-    Route::get('/employee/tasks',
-    [TaskController::class,'index'])
+    Route::get('/tasks',
+    [EmployeeTaskController::class,'index'])
     ->name('employee.tasks');
-});
 
+    Route::get('/tasks/{task}',
+    [EmployeeTaskController::class, 'show'])
+    ->name('employee.tasks.show');
+
+    Route::post('/tasks/{task}/progress',
+    [EmployeeTaskController::class, 'saveProgress'])
+    ->name('employee.tasks.progress');
+
+    Route::post('/tasks/{task}/submit',
+    [EmployeeTaskController::class, 'submit'])
+    ->name('employee.tasks.submit');
+});
 
 
 Route::middleware(['auth'])->group(function () {
@@ -167,6 +191,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/reports/{report}',[App\Http\Controllers\ReportController::class, 'show'])->name('reports.show');
 });
 
+
+/*
+|--------------------------------------------------------------------------
+| profile route
+|--------------------------------------------------------------------------
+
+/*
+|--------------------------------------------------------------------------
+| report route 
+|--------------------------------------------------------------------------
+*/
 
 
 // require __DIR__.'/auth.php';

@@ -34,8 +34,15 @@ Due Date
 <tbody>
 @forelse($tasks as $task)
 <tr class="border-b">
+
 <td class="p-3 font-semibold">
-{{ $task->title }}
+    
+<a href="{{ route('employee.tasks.show', $task) }}"
+   class="text-blue-600 hover:underline font-semibold">
+
+    {{ $task->title }}
+
+</a>
 </td>
 <td class="p-3">
 {{ $task->description ?? 'No description' }}

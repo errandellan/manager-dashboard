@@ -17,43 +17,47 @@
 
         <div class="p-6 text-2xl font-bold border-b border-blue-700">
             ADMIN
+            
         </div>
 
         <nav class="mt-6">
 
-            <a href="{{ route('admin.dashboard') }}"
-               class="block px-6 py-3 hover:bg-blue-800">
-                🏠 Dashboard
-            </a>
+    <a href="{{ route('admin.dashboard') }}"
+       class="block px-6 py-3 hover:bg-blue-800">
+        🏠 Dashboard
+    </a>
 
-            <a href="{{route('admin.users')}}"
-               class="block px-6 py-3 hover:bg-blue-800">
-                👥 Users
-            </a>
+    <a href="{{ route('admin.users') }}"
+       class="block px-6 py-3 hover:bg-blue-800">
+        👥 Users
+    </a>
 
-            <a href="{{route('admin.departments')}}"
-               class="block px-6 py-3 hover:bg-blue-800">
-                🏢 Departments
-            </a>
+    <a href="{{ route('admin.departments') }}"
+       class="block px-6 py-3 hover:bg-blue-800">
+        🏢 Departments
+    </a>
 
-            <a href="#"
-               class="block px-6 py-3 hover:bg-blue-800">
-                💼 Jobs
-            </a>
+    <a href="{{ route('admin.jobs') }}"
+       class="block px-6 py-3 hover:bg-blue-800">
+        💼 Jobs
+    </a>
 
-            <form action="{{ route('logout') }}" method="POST">
+    <hr class="my-4 border-blue-700">
 
-                @csrf
+    <a href="{{ route('profile.edit') }}"
+       class="block px-6 py-3 hover:bg-blue-800">
+        👤 My Profile
+    </a>
 
-                <button
-                    class="w-full text-left px-6 py-3 hover:bg-red-700">
-                    🚪 Logout
-                </button>
+    <form action="{{ route('logout') }}" method="POST">
+        @csrf
+        <button
+            class="w-full text-left px-6 py-3 hover:bg-red-700">
+            🚪 Logout
+        </button>
+    </form>
 
-            </form>
-
-        </nav>
-
+</nav>
     </aside>
 
     <!-- Main Content -->

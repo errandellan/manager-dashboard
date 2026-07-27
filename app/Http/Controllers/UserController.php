@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -43,7 +44,7 @@ class UserController extends Controller
         $user->role_id = $request->input('role_id');
         $user->save();
 
-        return redirect()->route('users.index')
+        return redirect()->route('admin.users')
             ->with('success', 'User role updated successfully.');
     }
 
@@ -67,6 +68,47 @@ class UserController extends Controller
                     'success',
                     'User deleted successfully.'
                 );
+    }
+
+    //reset password for user
+    public function resetPassword(User $user)
+    {
+        if (Auth::user()->role_id != 1) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        //prevent admin from resetting their own password here
+        if ($user->id == Auth::id()) {
+            return redirect()->route('admin.users')
+                ->with('error', 'use your profile page to change your own password.');
+        }
+        return view('admin.reset-password', compact('user'));
+    }
+
+    public function updatePassword(Request $request, User $user){
+        if (Auth::user()->role_id !=1){
+            abort(403);
+        }
+        if ($user->id == Auth::id()){
+            return redirect()
+            ->route('admin.users')
+            ->with('error', 'Use your profile page to change your own password');
+
+        }
+        $request->validate([
+            'password' => 'required|min:8|confirmed',
+            ]);
+
+            $user->password = Hash::make($request->password);
+
+            $user->save();
+            return redirect()
+        ->route('admin.users')
+        ->with('success', 'Password reset successfully.');
+
+        
+
+        
     }
     public function edit(User $user)
     {

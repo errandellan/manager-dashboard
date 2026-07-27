@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\AttendanceLog;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -20,6 +21,22 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
         $request->session()->regenerate();
         $user  = Auth::user();
+
+         // Create attendance record when user logs in
+
+    AttendanceLog::create([
+
+        'user_id' => $user->id,
+
+        'login_time' => now(),
+
+        'status' => 'active'
+
+    ]);
+
+    dd($attendance);
+
+
         switch ($user->role_id) {
             case 1:
                 return redirect()->route('admin.dashboard');
@@ -37,12 +54,42 @@ class AuthenticatedSessionController extends Controller
     }
 
     public function destroy(Request $request): RedirectResponse
-    {
-        Auth::guard('web')->logout();
+{
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    $attendance = AttendanceLog::where('user_id', Auth::id())
+                    ->where('status','active')
+                    ->latest()
+                    ->first();
 
-        return redirect('/login');
+
+
+    if($attendance){
+
+        $attendance->update([
+
+            'logout_time' => now(),
+
+            'session_duration' => now()
+                ->diffInMinutes($attendance->login_time),
+
+            'status' => 'inactive'
+
+        ]);
+
     }
+
+
+
+
+    Auth::guard('web')->logout();
+
+
+    $request->session()->invalidate();
+
+    $request->session()->regenerateToken();
+
+
+
+    return redirect('/login');
+}
 }

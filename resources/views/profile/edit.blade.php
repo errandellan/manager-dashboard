@@ -1,29 +1,32 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends(
+    Auth::user()->role_id == 1 ? 'layouts.admin' :
+    (Auth::user()->role_id == 2 ? 'layouts.manager' : 'layouts.employee')
+)
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
+@section('content')
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
+<h2 class="text-3xl font-bold mb-8">
+    👤 My Profile
+</h2>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
-        </div>
+<p class="text-gray-600 mb-8">
+    Manage your personal information, update your password, and keep your account secure.
+</p>
+
+<div class="space-y-8">
+
+    <div class="bg-white shadow rounded-xl p-6">
+        @include('profile.partials.update-profile-information-form')
     </div>
-</x-app-layout>
+
+    <div class="bg-white shadow rounded-xl p-6">
+        @include('profile.partials.update-password-form')
+    </div>
+
+    <div class="bg-white shadow rounded-xl p-6">
+        @include('profile.partials.delete-user-form')
+    </div>
+
+</div>
+
+@endsection

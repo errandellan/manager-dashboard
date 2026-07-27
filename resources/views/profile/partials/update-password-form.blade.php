@@ -9,7 +9,7 @@
         </p>
     </header>
 
-    <form method="post" action="{{ route('password.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.password.update') }}" class="mt-6 space-y-6">
         @csrf
         @method('put')
 
@@ -23,12 +23,22 @@
             <x-input-label for="update_password_password" :value="__('New Password')" />
             <x-text-input id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
             <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
+                @error('current_password')
+                <p class="text-red-600 text-sm mt-1">
+                    {{ $message }}
+                </p>
+            @enderror
         </div>
 
         <div>
             <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
             <x-text-input id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
             <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
+                    @error('password')
+            <p class="text-red-600 text-sm mt-1">
+                {{ $message }}
+            </p>
+        @enderror
         </div>
 
         <div class="flex items-center gap-4">
@@ -42,6 +52,12 @@
                     x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-gray-600"
                 >{{ __('Saved.') }}</p>
+
+                @if(session('success'))
+                    <p class="text-green-600 font-semibold">
+                        {{ session('success') }}
+                    </p>
+                @endif
             @endif
         </div>
     </form>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\AttendanceLog;
 
 class LoginController extends Controller
 {
@@ -30,6 +31,19 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
+
+            // Prevent duplicate active attendance sessions
+            $activeAttendance = AttendanceLog::where('user_id', $user->id)
+                ->where('status', 'active')
+                ->first();
+
+            if (!$activeAttendance) {
+                AttendanceLog::create([
+                    'user_id' => $user->id,
+                    'login_time' => now(),
+                    'status' => 'active',
+                ]);
+            }
 
             if ($user->role_id == 1) {
                 return redirect()->route('admin.dashboard');
@@ -60,6 +74,21 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        $attendance = AttendanceLog::where('user_id', Auth::id())
+        ->where('status', 'active')
+        ->latest()
+        ->first();
+
+    if ($attendance) {
+
+        $logoutTime = now();
+
+        $attendance->update([
+            'logout_time' => $logoutTime,
+            'session_duration' => $attendance->login_time->diffInMinutes($logoutTime),
+            'status' => 'inactive',
+        ]);
+    }
         Auth::logout();
 
         $request->session()->invalidate();

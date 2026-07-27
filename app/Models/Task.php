@@ -12,10 +12,18 @@ class Task extends Model
         'title',
         'description',
         'status',
+        'priotity',
         'due_date',
+        'review_status',
+        'submitted_at',
+        'approved_at',
+
     ];
     protected $casts = [
+        'due_date' => 'datetime',
         'completed_at' => 'datetime',
+        'submitted_at' => 'datetime',
+        'approved_at' => 'datetime',
     ];
 
     public function manager()
@@ -26,5 +34,10 @@ class Task extends Model
     public function employee()
     {
         return $this->belongsTo(User::class, 'assigned_to');
+    }
+    
+    public function updates()
+    {
+        return $this->hasMany(TaskUpdate::class);
     }
 }

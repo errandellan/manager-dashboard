@@ -93,18 +93,21 @@
 
             </a>
 
-            <!-- Logout -->
+             <hr class="my-4 border-blue-700">
+
+            <a href="{{ route('profile.edit') }}"
+            class="block px-6 py-3 hover:bg-blue-800">
+                👤 My Profile
+            </a>
+
             <form action="{{ route('logout') }}" method="POST">
-
                 @csrf
-                <button 
-                class="w-full text-left px-6 py-3 hover:bg-red-600">
-
+                <button
+                    class="w-full text-left px-6 py-3 hover:bg-red-700">
                     🚪 Logout
-
                 </button>
-
             </form>
+
       </nav>
 
     </aside>
