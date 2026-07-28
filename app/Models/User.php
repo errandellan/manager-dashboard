@@ -91,5 +91,10 @@ class User extends Authenticatable
         return $this->belongsTo(Job::class);
     }
 
+    public function taskSubmissions()
+    {
+        return $this->hasMany(TaskSubmission::class, 'submitted_by');
+    }
+
 
 }

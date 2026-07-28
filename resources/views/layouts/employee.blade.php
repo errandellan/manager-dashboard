@@ -2,7 +2,11 @@
 <html>
 
 <head>
-    <title>Employee Dashboard</title>
+    <title>
+        {{ config('app.name', 'Manager Dashboard')}}
+    </title>
+    <link rel="icon" type="image/jpeg" href="{{ asset('logo.jpeg')}}">
+    
 
     @vite(['resources/css/app.css','resources/js/app.js'])
 

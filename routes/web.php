@@ -14,6 +14,7 @@ use App\Http\Controllers\Manager\TaskController as ManagerTaskController;
 use App\Http\Controllers\Employee\TaskController as EmployeeTaskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\Employee\TaskSubmissionController;
 
 Route::get('/', function () {
     if (Auth::check()){
@@ -117,6 +118,11 @@ Route::middleware(['auth', 'manager'])->prefix('manager')->group(function () {
 
     Route::resource('tasks',ManagerTaskController::class)
     ->names('manager.tasks');
+
+    Route::post(
+    '/tasks/{task}/review',
+    [ManagerTaskController::class, 'review']
+        )->name('manager.tasks.review');
 });
 
 /*
@@ -169,13 +175,21 @@ Route::middleware(['auth','employee'])
     [EmployeeTaskController::class, 'show'])
     ->name('employee.tasks.show');
 
+    Route::post(
+    '/tasks/{task}/start',
+    [EmployeeTaskController::class,'start']
+    )->name('employee.tasks.start');
+
     Route::post('/tasks/{task}/progress',
     [EmployeeTaskController::class, 'saveProgress'])
     ->name('employee.tasks.progress');
 
-    Route::post('/tasks/{task}/submit',
-    [EmployeeTaskController::class, 'submit'])
-    ->name('employee.tasks.submit');
+   Route::post(
+    '/tasks/{task}/submit',
+    [EmployeeTaskController::class, 'submit']
+    )->name('employee.tasks.submit');
+ 
+
 });
 
 

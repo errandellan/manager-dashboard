@@ -2,103 +2,140 @@
 
 @section('content')
 
-<div class="flex justify-between items-center mb-6">
+<div class="mb-8 flex justify-between items-center">
 
-    <h2 class="text-3xl font-bold">
-        Departments
-    </h2>
+    <div>
 
-    <a href="{{ route('admin.departments.create') }}"
-       class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg">
+        <h1 class="text-4xl font-bold text-gray-800">
+            Department Management
+        </h1>
 
-        + Add Department
+        <p class="text-gray-600 mt-2">
+            Create, update and manage all departments.
+        </p>
 
-    </a>
+    </div>
+
+    <div class="flex items-center gap-4">
+
+        <div class="bg-green-600 text-white px-5 py-3 rounded-xl shadow">
+            Total Departments:
+            <span class="font-bold">{{ $departments->count() }}</span>
+        </div>
+
+        <a href="{{ route('admin.departments.create') }}"
+           class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl shadow">
+            ➕ Add Department
+        </a>
+
+    </div>
 
 </div>
 
-<table class="min-w-full bg-white rounded-lg shadow">
+@if(session('success'))
 
-    <thead class="bg-gray-100">
+<div class="mb-6 bg-green-100 border border-green-300 text-green-700 px-4 py-3 rounded-lg">
+    {{ session('success') }}
+</div>
 
-        <tr>
+@endif
 
-            <th class="p-4 text-left">Department</th>
+@if(session('error'))
 
-            <th class="p-4 text-left">Description</th>
+<div class="mb-6 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
+    {{ session('error') }}
+</div>
 
-            <th class="p-4 text-center">Actions</th>
+@endif
 
-        </tr>
+<div class="bg-white rounded-2xl shadow-lg overflow-hidden">
 
-    </thead>
+    <table class="min-w-full">
 
-    <tbody>
+        <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
 
-    @forelse($departments as $department)
+            <tr>
 
-        <tr class="border-b">
+                <th class="px-6 py-4 text-left">
+                    Department
+                </th>
 
-            <td class="p-4">
+                <th class="px-6 py-4 text-left">
+                    Description
+                </th>
 
-                {{ $department->department_name }}
+                <th class="px-6 py-4 text-center">
+                    Actions
+                </th>
 
-            </td>
+            </tr>
 
-            <td class="p-4">
+        </thead>
 
-                {{ $department->description }}
+        <tbody>
 
-            </td>
+        @forelse($departments as $department)
 
-            <td class="p-4 text-center">
+            <tr class="border-b hover:bg-gray-50 transition">
 
-                <a href="{{ route('admin.departments.edit',$department->id) }}"
-                   class="bg-blue-500 text-white px-3 py-1 rounded">
+                <td class="px-6 py-4 font-semibold">
+                    {{ $department->department_name }}
+                </td>
 
-                    Edit
+                <td class="px-6 py-4 text-gray-600">
+                    {{ $department->description ?: 'No description available.' }}
+                </td>
 
-                </a>
+                <td class="px-6 py-4">
 
-                <form
-                    action="{{ route('admin.departments.destroy',$department->id) }}"
-                    method="POST"
-                    class="inline">
+                    <div class="flex justify-center gap-2">
 
-                    @csrf
-                    @method('DELETE')
+                        <a href="{{ route('admin.departments.edit', $department->id) }}"
+                           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm">
+                            ✏ Edit
+                        </a>
 
-                    <button
-                        onclick="return confirm('Delete this department?')"
-                        class="bg-red-500 text-white px-3 py-1 rounded">
+                        <form action="{{ route('admin.departments.destroy', $department->id) }}"
+                              method="POST">
 
-                        Delete
+                            @csrf
+                            @method('DELETE')
 
-                    </button>
+                            <button
+                                type="submit"
+                                onclick="return confirm('Delete {{ $department->department_name }}?')"
+                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
 
-                </form>
+                                🗑 Delete
 
-            </td>
+                            </button>
 
-        </tr>
+                        </form>
 
-    @empty
+                    </div>
 
-        <tr>
+                </td>
 
-            <td colspan="3"
-                class="text-center py-8">
+            </tr>
 
-                No departments found.
+        @empty
 
-            </td>
+            <tr>
 
-        </tr>
+                <td colspan="3" class="text-center py-8 text-gray-500">
 
-    @endforelse
+                    No departments found.
 
-    </tbody>
+                </td>
 
-</table>
+            </tr>
+
+        @endforelse
+
+        </tbody>
+
+    </table>
+
+</div>
 
 @endsection

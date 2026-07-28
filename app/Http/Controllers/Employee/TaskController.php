@@ -38,8 +38,28 @@ class TaskController extends Controller
     return view('employee.tasks.show', compact('task'));
     }
 
+    public function start(Task $task)
+    {
+    if ($task->assigned_to != Auth::id()) {
+        abort(403);
+    }
+
+    if ($task->status == 'pending') {
+
+        $task->update([
+            'status' => 'in_progress'
+        ]);
+
+    }
+
+    return redirect()
+    ->route('employee.tasks.show', $task)
+    ->with('success', 'Task started successfully ');
+    
+    }
+
     public function saveProgress(Request $request, Task $task)
-{
+    {
     if ($task->assigned_to != auth()->id()) {
         abort(403);
     }
@@ -88,28 +108,69 @@ class TaskController extends Controller
     }
 
     return back()->with('success', 'Progress saved successfully.');
-}
+    }
 
-public function submit(Task $task)
-{
-    if ($task->assigned_to != auth()->id()) {
+    public function submit(Request $request, Task $task)
+    {
+    if ($task->assigned_to != Auth::id()) {
         abort(403);
     }
 
-    $task->update([
+    $request->validate([
+        'submission_type' => 'required|in:file,link',
+        'file' => 'nullable|file|max:10240',
+        'submission_link' => 'nullable|url',
+    ]);
 
-        'review_status' => 'submitted',
+    $filePath = null;
+
+    if ($request->hasFile('file')) {
+
+        $filePath = $request
+            ->file('file')
+            ->store('task-submissions', 'public');
+
+    }
+
+    TaskUpdate::create([
+
+        'task_id' => $task->id,
+
+        'updated_by' => Auth::id(),
+
+        'progress' => 100,
+
+        'comment' => 'Task Submitted',
+
+        'submission_type' => $request->submission_type,
+
+        'file_path' => $filePath,
+
+        'submission_link' => $request->submission_link,
 
         'submitted_at' => now(),
 
     ]);
 
-    
+    $task->update([
 
-    return back()->with(
-        'success',
-        'Task submitted to manager successfully.'
-    );
-}
+        'status' => 'submitted',
+
+    ]);
+
+    return redirect()
+            ->route('employee.tasks.show', $task)
+            ->with('success', 'Task submitted successfully.');
+    }
+
+
+    public function showSubmitForm(Task $task)
+    {
+        if ($task->assigned_to != Auth::id()) {
+            abort(403);
+        }
+
+        return view('employee.tasks.submit', compact('task'));
+    }
 
 }

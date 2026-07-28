@@ -147,9 +147,31 @@
 
                     </td>
 
-                    <td class="px-4 py-3">
-                        {{ ucwords(str_replace('_',' ', $task->status)) }}
-                    </td>
+                <td class="px-4 py-3">
+
+                @if($task->status == 'pending')
+                    <span class="px-3 py-1 rounded bg-yellow-100 text-yellow-700">
+                        Pending
+                    </span>
+
+                @elseif($task->status == 'in_progress')
+                    <span class="px-3 py-1 rounded bg-blue-100 text-blue-700">
+                        In Progress
+                    </span>
+
+                @elseif($task->status == 'submitted')
+                    <span class="px-3 py-1 rounded bg-purple-100 text-purple-700 font-semibold">
+                        Submitted
+                    </span>
+
+                @elseif($task->status == 'completed')
+                    <span class="px-3 py-1 rounded bg-green-100 text-green-700">
+                        Completed
+                    </span>
+
+                @endif
+
+            </td>
 
                     <td class="px-4 py-3">
 
@@ -157,16 +179,51 @@
 
                     </td>
 
-                    <td class="px-4 py-3">
+            
+            <td class="px-4 py-3 flex gap-3">
 
-                        <a href="{{ route('manager.tasks.edit',$task) }}"
-                           class="text-blue-600 hover:underline">
+        <a href="{{ route('manager.tasks.show',$task) }}"
+       class="text-indigo-600 hover:underline">
 
-                            Edit
+        View
 
-                        </a>
+        </a>
 
-                    </td>
+    <a href="{{ route('manager.tasks.edit',$task) }}"
+       class="text-blue-600 hover:underline">
+
+        Edit
+
+    </a>
+
+    <form action="{{ route('manager.tasks.destroy',$task) }}"
+          method="POST">
+
+        @csrf
+        @method('DELETE')
+
+        <button class="text-red-600 hover:underline">
+            Delete
+        </button>
+
+    </form>
+
+</td>
+
+        <form action="{{ route('manager.tasks.destroy',$task) }}"
+              method="POST"
+              onsubmit="return confirm('Delete this task?')">
+
+            @csrf
+            @method('DELETE')
+
+            
+
+        </form>
+
+    </div>
+
+</td>
 
                 </tr>
 

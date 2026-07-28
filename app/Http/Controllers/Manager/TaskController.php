@@ -96,11 +96,18 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Task $task)
     {
-        //
-    }
+    $task->load([
+        'employee',
+        'updates.user'
+    ]);
 
+    return view(
+        'manager.tasks.show',
+        compact('task')
+    );
+        }
     /**
      * Show the form for editing the specified resource.
      */
@@ -155,4 +162,48 @@ class TaskController extends Controller
         ->route('manager.tasks.index')
         ->with('success', 'Task deleted successfully.');
     }
+
+    public function review(Request $request, Task $task)
+{
+    $request->validate([
+        'decision' => 'required|in:approved,rejected',
+        'feedback' => 'nullable|string',
+    ]);
+
+    $latestUpdate = $task->updates()->latest()->first();
+
+    if ($latestUpdate) {
+
+        $latestUpdate->update([
+
+            'manager_feedback' => $request->feedback,
+
+            'reviewed_at' => now(),
+
+        ]);
+
+    }
+
+    if ($request->decision == 'approved') {
+
+        $task->update([
+
+            'status' => 'completed',
+
+        ]);
+
+    } else {
+
+        $task->update([
+
+            'status' => 'in_progress',
+
+        ]);
+
+    }
+
+    return redirect()
+        ->route('manager.tasks.show', $task)
+        ->with('success', 'Review completed successfully.');
+}
 }
