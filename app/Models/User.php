@@ -13,11 +13,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Task;
-use App\Models\Job;
-use App\Models\Role;
-use App\Models\Department;
-use App\Models\Report;
 use App\Models\AttendanceLog;
+use App\Models\PerformanceScore;
+use App\Models\Department;
+use App\Models\Job;
 
 
 
@@ -94,6 +93,16 @@ class User extends Authenticatable
     public function taskSubmissions()
     {
         return $this->hasMany(TaskSubmission::class, 'submitted_by');
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'assigned_to');
+    }
+
+    public function performanceScores()
+    {
+        return $this->hasMany(PerformanceScore::class);
     }
 
 

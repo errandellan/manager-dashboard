@@ -12,9 +12,12 @@ use App\Http\Controllers\Employee\AttendanceController;
 use App\Http\Controllers\Manager\AttendanceController as ManagerAttendanceController;
 use App\Http\Controllers\Manager\TaskController as ManagerTaskController;
 use App\Http\Controllers\Employee\TaskController as EmployeeTaskController;
+use App\Http\Controllers\Manager\EmployeeController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\Employee\TaskSubmissionController;
+use App\Http\Controllers\Employee\PerformanceController;
+use App\Http\Controllers\Manager\PerformanceController as ManagerPerformanceController;
 
 Route::get('/', function () {
     if (Auth::check()){
@@ -79,6 +82,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])
         ->name('admin.departments.destroy');
 
+    });
+
+
     Route::get('/jobs', function () {
         return view('admin.jobs');
     })->name('admin.jobs');
@@ -103,7 +109,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('admin.users.reset-password');
     Route::put('/users/{user}/password', [UserController::class, 'updatePassword'])
         ->name('admin.users.update-password');
-});
+
 
 
 // Manager Routes
@@ -123,6 +129,25 @@ Route::middleware(['auth', 'manager'])->prefix('manager')->group(function () {
     '/tasks/{task}/review',
     [ManagerTaskController::class, 'review']
         )->name('manager.tasks.review');
+
+         Route::get('/employees', [EmployeeController::class, 'index'])
+    ->name('manager.employees.index');
+
+    Route::get('/employees/{user}', [EmployeeController::class, 'show'])
+    ->name('manager.employees.show');
+
+    Route::get(
+    '/performance',
+    [ManagerPerformanceController::class, 'index']
+    )->name('manager.performance');
+
+    Route::post(
+    '/performance/calculate',
+    [ManagerPerformanceController::class, 'calculate']
+    )->name('manager.performance.calculate');
+
+    
+        
 });
 
 /*
@@ -134,6 +159,8 @@ Route::middleware(['auth', 'manager'])->prefix('manager')->group(function () {
 
 
 Route::middleware('auth')->group(function () {
+    
+    
 
     Route::get('/profile', [ProfileController::class, 'edit'])
     ->name('profile.edit');
@@ -188,6 +215,9 @@ Route::middleware(['auth','employee'])
     '/tasks/{task}/submit',
     [EmployeeTaskController::class, 'submit']
     )->name('employee.tasks.submit');
+
+    Route::get('/performance', [PerformanceController::class, 'index'])
+    ->name('employee.performance');
  
 
 });

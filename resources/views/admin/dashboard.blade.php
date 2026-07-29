@@ -88,7 +88,7 @@
 
         <a href="{{ route('admin.departments') }}"
            class="inline-block mt-5 text-green-600 font-semibold hover:underline">
-            Manage Departments →
+            Manage Departments 
         </a>
 
     </div>

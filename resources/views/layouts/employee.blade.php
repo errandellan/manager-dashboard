@@ -71,22 +71,13 @@
                 ✅ My Tasks
 
             </a>
-            <!-- Activities -->
-
-            <a href="#"     
-            class="block px-6 py-3 hover:bg-blue-600">
-
-                🖥 My Activities
-
-            </a>
+           
 
             <!-- Performance -->
 
-            <a href="#"      
-            class="block px-6 py-3 hover:bg-blue-600">
-
-                📈 My Performance
-
+            <a href="{{ route('employee.performance') }}"
+                class="block px-6 py-3 hover:bg-green-600">
+                    📊 Performance
             </a>
 
             <!-- Reports -->

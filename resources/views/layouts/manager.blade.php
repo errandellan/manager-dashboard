@@ -65,14 +65,12 @@
 
             </a>
 
-
-
-            <a href="#"
-               class="block px-6 py-3 hover:bg-green-600">
-
+            
+        <a href="{{ route('manager.employees.index') }}"
+            class="block px-6 py-3 hover:bg-green-600">
                 👥 Employees
-
             </a>
+            
 
 
 
@@ -83,14 +81,6 @@
 
             </a>
 
-
-
-            <a href="#"
-               class="block px-6 py-3 hover:bg-green-600">
-
-                🖥 Activities
-
-            </a>
 
 
 
@@ -104,13 +94,12 @@
 
 
 
-            <a href="#"
-               class="block px-6 py-3 hover:bg-green-600">
+            <a href="{{ route('manager.performance') }}"
+                class="block px-6 py-3 hover:bg-green-600">
 
-                📈 Performance
+                    📈 Performance
 
             </a>
-
 
 
             <a href="#"
@@ -183,7 +172,7 @@
 
 
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </body>
 </html>
