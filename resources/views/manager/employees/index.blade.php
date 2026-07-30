@@ -2,7 +2,7 @@
 
 @section('content')
 
-<h2 class="text-3xl font-bold mb-6">
+<h2 class="text-3xl font-bold mb-6 size-10px">
     Employees
 </h2>
 

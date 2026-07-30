@@ -141,7 +141,7 @@
 
 <td class="px-4 py-3">
 
-{{ $score->user->name }}
+{{ $score->user?->name ?? 'Unknown Employee' }}
 
 </td>
 

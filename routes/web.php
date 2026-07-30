@@ -18,6 +18,15 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\Employee\TaskSubmissionController;
 use App\Http\Controllers\Employee\PerformanceController;
 use App\Http\Controllers\Manager\PerformanceController as ManagerPerformanceController;
+use App\Http\Controllers\Manager\ReportController as ManagerReportController;
+use App\Http\Controllers\Employee\ReportController as EmployeeReportController;
+use App\Http\Controllers\JobController;
+use App\Http\Controllers\Admin\SettingController;
+
+
+
+
+
 
 Route::get('/', function () {
     if (Auth::check()){
@@ -82,6 +91,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])
         ->name('admin.departments.destroy');
 
+     Route::get('/settings',
+        [SettingController::class,'index'])
+        ->name('admin.settings');
+
+
+    Route::put('/settings',
+        [SettingController::class,'update'])
+        ->name('admin.settings.update');
+
+
     });
 
 
@@ -89,9 +108,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         return view('admin.jobs');
     })->name('admin.jobs');
 
-    Route::get('/settings', function () {   
-        return view('admin.settings');
-    })->name('admin.settings');
+    Route::get('/jobs', [JobController::class, 'index'])
+    ->name('admin.jobs');
+
+   
 
 
 
@@ -109,6 +129,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
         ->name('admin.users.reset-password');
     Route::put('/users/{user}/password', [UserController::class, 'updatePassword'])
         ->name('admin.users.update-password');
+    Route::get('/settings',
+    [SettingController::class,'index'])
+    ->name('admin.settings');
 
 
 
@@ -145,6 +168,42 @@ Route::middleware(['auth', 'manager'])->prefix('manager')->group(function () {
     '/performance/calculate',
     [ManagerPerformanceController::class, 'calculate']
     )->name('manager.performance.calculate');
+
+    Route::get(
+    '/reports',
+    [ManagerReportController::class,'index']
+)->name('manager.reports');
+
+Route::get(
+    '/reports/create',
+    [ManagerReportController::class,'create']
+)->name('manager.reports.create');
+
+Route::post(
+    '/reports',
+    [ManagerReportController::class,'store']
+)->name('manager.reports.store');
+
+// Route::get('/reports',
+//     [ManagerReportController::class,'index'])
+//     ->name('manager.reports');
+
+// Route::get('/reports/create',
+//     [ManagerReportController::class,'create'])
+//     ->name('manager.reports.create');
+
+// Route::post('/reports',
+//     [ManagerReportController::class,'store'])
+//     ->name('manager.reports.store');
+
+Route::get('/reports/{report}',
+    [ManagerReportController::class,'show'])
+    ->name('manager.reports.show');
+
+Route::delete('/reports/{report}',
+    [ManagerReportController::class,'destroy'])
+    ->name('manager.reports.destroy');
+
 
     
         
@@ -218,6 +277,16 @@ Route::middleware(['auth','employee'])
 
     Route::get('/performance', [PerformanceController::class, 'index'])
     ->name('employee.performance');
+    
+    Route::get(
+    '/reports',
+    [EmployeeReportController::class, 'index']
+)->name('employee.reports');
+
+Route::get(
+    '/reports/{report}',
+    [EmployeeReportController::class, 'show']
+)->name('employee.reports.show');
  
 
 });

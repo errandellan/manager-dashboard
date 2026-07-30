@@ -2,153 +2,327 @@
 
 @section('content')
 
-<div class="bg-white rounded-xl shadow p-6">
+<div class="space-y-6">
 
-    <div class="flex justify-between items-center mb-6">
+    <!-- Page Header -->
 
-        <h2 class="text-2xl font-bold">
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl shadow-lg p-6 text-white">
+
+        <h1 class="text-3xl font-bold">
             My Tasks
-        </h2>
+        </h1>
+
+        
 
     </div>
 
-    <table class="w-full">
 
-        <thead>
 
-            <tr class="border-b">
 
-                <th class="text-left p-3">Task</th>
 
-                <th class="text-left p-3">Description</th>
+    <!-- Information Card -->
 
-                <th class="text-left p-3">Status</th>
+    <div class="bg-white rounded-xl shadow p-6">
 
-                <th class="text-left p-3">Due Date</th>
+        <h2 class="text-xl font-bold text-gray-800 mb-3">
+            Task Information
+        </h2>
 
-                <th class="text-left p-3">Actions</th>
+        <p class="text-gray-600 leading-relaxed">
 
-            </tr>
+            This page displays all tasks assigned to you by your manager.
+            Use the available actions to start, continue, or submit your work.
+            Complete tasks before their due dates to maintain a strong performance record.
 
-        </thead>
+        </p>
 
-        <tbody>
+    </div>
 
-        @forelse($tasks as $task)
 
-            <tr class="border-b hover:bg-gray-50">
 
-                <td class="p-3 font-semibold">
 
-                    {{ $task->title }}
 
-                </td>
+    <!-- Tasks Table -->
 
-                <td class="p-3">
+    <div class="bg-white rounded-xl shadow overflow-hidden">
 
-                    {{ $task->description ?? 'No description' }}
+        <div class="p-6 border-b">
 
-                </td>
+            <h2 class="text-xl font-bold text-gray-800">
+                Assigned Tasks
+            </h2>
 
-                <td class="p-3">
+            <p class="text-sm text-gray-500 mt-1">
+                Review and manage your assigned work below.
+            </p>
 
-                    {{ ucwords(str_replace('_',' ',$task->status)) }}
+        </div>
 
-                </td>
 
-                <td class="p-3">
 
-                    @if($task->due_date)
 
-                        {{ $task->due_date->format('d M Y H:i') }}
 
-                    @else
+        <div class="overflow-x-auto">
 
-                        No deadline
+            <table class="w-full">
 
-                    @endif
+                <thead class="bg-gray-50 border-b">
 
-                </td>
+                    <tr>
 
-                <td class="p-3">
+                        <th class="text-left p-4 font-semibold text-gray-600">
+                            Task
+                        </th>
 
-                    @if($task->status == 'pending')
+                        <th class="text-left p-4 font-semibold text-gray-600">
+                            Description
+                        </th>
 
-                        <form action="{{ route('employee.tasks.start',$task) }}"
-                              method="POST"
-                              class="inline">
+                        <th class="text-left p-4 font-semibold text-gray-600">
+                            Status
+                        </th>
 
-                            @csrf
+                        <th class="text-left p-4 font-semibold text-gray-600">
+                            Due Date
+                        </th>
 
-                            <input type="hidden"
-                                   name="status"
-                                   value="in_progress">
+                        <th class="text-center p-4 font-semibold text-gray-600">
+                            Actions
+                        </th>
 
-                            <button
-                                class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-2 rounded">
+                    </tr>
 
-                                Start
+                </thead>
 
-                            </button>
 
-                        </form>
 
-                    @elseif($task->status == 'in_progress')
 
-                        <a href="{{ route('employee.tasks.show',$task) }}"
-                           class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded">
 
-                            Continue
+                <tbody>
 
-                        </a>
+                @forelse($tasks as $task)
 
-                        <a href="{{ route('employee.tasks.submit',$task) }}"
-                           class="bg-green-700 hover:bg-green-800 text-white px-3 py-2 rounded ml-2">
+                    <tr class="border-b hover:bg-gray-50 transition">
 
-                            Submit
+                        <td class="p-4 font-semibold text-gray-800">
 
-                        </a>
+                            {{ $task->title }}
 
-                    @elseif($task->status == 'submitted')
+                        </td>
 
-                        <span class="text-blue-600 font-semibold">
+                        <td class="p-4 text-gray-600">
 
-                            Awaiting Review
+                            {{ $task->description ?? 'No description provided.' }}
 
-                        </span>
+                        </td>
 
-                    @elseif($task->status == 'completed')
 
-                        <span class="text-green-700 font-semibold">
 
-                            ✔ Completed
 
-                        </span>
 
-                    @endif
+                        <td class="p-4">
 
-                </td>
+                            @if($task->status == 'pending')
 
-            </tr>
+                                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                    Pending
+                                </span>
 
-        @empty
+                            @elseif($task->status == 'in_progress')
 
-            <tr>
+                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                    In Progress
+                                </span>
 
-                <td colspan="5"
-                    class="text-center p-6 text-gray-500">
+                            @elseif($task->status == 'submitted')
 
-                    No tasks assigned yet.
+                                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                    Submitted
+                                </span>
 
-                </td>
+                            @elseif($task->status == 'completed')
 
-            </tr>
+                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                    Completed
+                                </span>
 
-        @endforelse
+                            @endif
 
-        </tbody>
+                        </td>
 
-    </table>
+
+
+
+
+                        <td class="p-4 text-gray-600">
+
+                            @if($task->due_date)
+
+                                {{ $task->due_date->format('d M Y H:i') }}
+
+                            @else
+
+                                <span class="text-gray-400">
+                                    No deadline
+                                </span>
+
+                            @endif
+
+                        </td>
+
+
+
+
+
+                        <td class="p-4 text-center whitespace-nowrap">
+
+                            @if($task->status == 'pending')
+
+                                <form action="{{ route('employee.tasks.start',$task) }}"
+                                      method="POST"
+                                      class="inline">
+
+                                    @csrf
+
+                                    <input type="hidden"
+                                           name="status"
+                                           value="in_progress">
+
+                                    <button class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition">
+
+                                        Start
+
+                                    </button>
+
+                                </form>
+
+                            @elseif($task->status == 'in_progress')
+
+                                <a href="{{ route('employee.tasks.show',$task) }}"
+                                   class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+
+                                    Continue
+
+                                </a>
+
+                                <a href="{{ route('employee.tasks.submit',$task) }}"
+                                   class="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition ml-2">
+
+                                    Submit
+
+                                </a>
+
+                            @elseif($task->status == 'submitted')
+
+                                <span class="font-semibold text-blue-600">
+
+                                    Awaiting Review
+
+                                </span>
+
+                            @elseif($task->status == 'completed')
+
+                                <span class="font-semibold text-green-600">
+
+                                    ✔ Completed
+
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                    </tr>
+
+                @empty
+
+                    <tr>
+
+                        <td colspan="5" class="p-10 text-center">
+
+                            <div class="text-gray-400">
+
+                                <h3 class="text-lg font-semibold">
+
+                                    No Tasks Assigned
+
+                                </h3>
+
+                                <p class="mt-2 text-sm">
+
+                                    Tasks assigned by your manager will appear here.
+
+                                </p>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                @endforelse
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+
+
+
+    <!-- Employee Tips -->
+
+    <div class="bg-white rounded-xl shadow p-6">
+
+        <h2 class="text-xl font-bold text-gray-800 mb-5">
+            Task Guidelines
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <div class="bg-blue-50 rounded-xl p-5">
+
+                <h3 class="font-bold text-blue-700">
+                    Start Promptly
+                </h3>
+
+                <p class="mt-2 text-sm text-gray-600">
+                    Begin your assigned tasks as soon as possible to avoid delays.
+                </p>
+
+            </div>
+
+            <div class="bg-green-50 rounded-xl p-5">
+
+                <h3 class="font-bold text-green-700">
+                    Track Progress
+                </h3>
+
+                <p class="mt-2 text-sm text-gray-600">
+                    Update your task status regularly to keep your manager informed.
+                </p>
+
+            </div>
+
+            <div class="bg-purple-50 rounded-xl p-5">
+
+                <h3 class="font-bold text-purple-700">
+                    Submit On Time
+                </h3>
+
+                <p class="mt-2 text-sm text-gray-600">
+                    Complete and submit your work before the specified deadline.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 

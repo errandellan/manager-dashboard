@@ -34,7 +34,7 @@
 
         <!-- System Title -->
 
-        <div class="p-6 text-2xl font-bold border-b border-blue-600">
+        <div class="p-6 text-2xl font-bold border-b border--600">
 
             EMPLOYEE
 
@@ -81,12 +81,12 @@
             </a>
 
             <!-- Reports -->
-            <a href="#"      
-            class="block px-6 py-3 hover:bg-blue-600">
+           <a href="{{ route('employee.reports') }}"
+                class="block px-6 py-3 hover:bg-green-600">
 
-                📄 My Reports
+                    📄 Reports
 
-            </a>
+                </a>
 
              <hr class="my-4 border-blue-700">
 

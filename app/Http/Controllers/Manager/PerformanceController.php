@@ -20,27 +20,26 @@ class PerformanceController extends Controller
 
     $employeesRated = PerformanceScore::count();
 
-    $averageScore = round(PerformanceScore::avg('overall_score'), 2);
+    $averageScore = round(
+        PerformanceScore::avg('overall_score'),
+        2
+    );
 
     $highestScore = PerformanceScore::max('overall_score');
 
     $topPerformer = PerformanceScore::with('user')
+        ->whereHas('user')
         ->orderByDesc('overall_score')
         ->first();
 
-    $chartData = $scores->map(function ($score) {
-    return [
-        'employee' => $score->user->name,
-        'overall' => $score->overall_score,
-    ];
-});
-
     $chartData = PerformanceScore::with('user')
-    ->orderByDesc('overall_score')
-    ->get();
+        ->whereHas('user')
+        ->orderByDesc('overall_score')
+        ->get();
 
-
-    $chartLabels = $chartData->pluck('user.name');
+    $chartLabels = $chartData->map(function ($score) {
+        return $score->user->name;
+    });
 
     $chartScores = $chartData->pluck('overall_score');
 

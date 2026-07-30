@@ -6,19 +6,35 @@ use Illuminate\Database\Eloquent\Model;
 
 class Report extends Model
 {
-    //status: pending, approved, rejected
-    const STATUS_PENDING = 'pending';
-    const STATUS_APPROVED = 'approved';
-    const STATUS_REJECTED = 'rejected';
-    
     protected $fillable = [
-        'user_id',
-        'title',
+
+        'generated_by',
+
+        'employee_id',
+
+        'report_name',
+
+        'report_type',
+
         'description',
-        'status',
+
+        'file_path',
+
+        'generated_at',
+
     ];
-    public function user()
+
+    public function generator()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'generated_by');
+    }
+
+    public function employee()
+    {
+        return $this->belongsTo(User::class, 'employee_id');
+    }
+    public function manager()
+    {
+        return $this->belongsTo(User::class,'generated_by');
     }
 }

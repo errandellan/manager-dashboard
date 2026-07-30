@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name', 'Manager Dashboard')}}</title>
-    <link rel="icon" type="image/jpeg" href="{{asset ('logo.jpeg')}}">
+    <title>{{ config('app.name')}}</title>
+    <link rel="icon" type="image/png" href="{{asset ('manager-icon.png')}}">
 
     @vite(['resources/css/app.css','resources/js/app.js'])
 </head>

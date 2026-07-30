@@ -14,7 +14,7 @@ class AttendanceController extends Controller
 
         $attendanceLogs = AttendanceLog::where('user_id', $employee->id)
                                       ->latest()
-                                      ->get();
+                                      ->paginate(10);
         return view('employee.attendance.index',
         compact('attendanceLogs'));
     }

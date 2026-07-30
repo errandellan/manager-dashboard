@@ -102,11 +102,9 @@
             </a>
 
 
-            <a href="#"
-               class="block px-6 py-3 hover:bg-green-600">
-
-                📄 Reports
-
+            <a href="{{ route('manager.reports') }}"
+                class="block px-6 py-3 hover:bg-green-600">
+                    📄 Reports
             </a>
 
 
